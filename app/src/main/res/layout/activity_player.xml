@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootPlayer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ECECEC">
+
+    <LinearLayout
+        android:id="@+id/topBarPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:background="#ECECEC">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MOTIONBEAT"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:textColor="#111111" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#222222" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="22dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="14dp">
+
+            <ImageView
+                android:id="@+id/imgCover"
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:background="#D8D8D8"
+                android:src="@android:drawable/ic_menu_gallery"
+                android:contentDescription="Capa"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/txtSongTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:text="PULSO GEOMETRICO"
+                android:textStyle="bold"
+                android:textSize="34sp"
+                android:textColor="#1A1A1A" />
+
+            <TextView
+                android:id="@+id/txtSongSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="4dp"
+                android:text="SONS ARQUITETONICOS"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#6A6A6A" />
+
+            <SeekBar
+                android:id="@+id/progressSong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="-2dp">
+
+                <TextView
+                    android:id="@+id/txtCurrentTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="00:00"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/txtTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnPrevious"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_media_previous"
+                    android:contentDescription="Anterior" />
+
+                <ImageButton
+                    android:id="@+id/btnPlayPause"
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_marginHorizontal="42dp"
+                    android:background="#000000"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Play Pause" />
+
+                <ImageButton
+                    android:id="@+id/btnNext"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_media_next"
+                    android:contentDescription="Seguinte" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_lock_silent_mode"
+                    android:contentDescription="Volume menos" />
+
+                <SeekBar
+                    android:id="@+id/seekVolume"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="100"
+                    android:progress="50" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"
+                    android:contentDescription="Volume mais" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="#D7D7D7" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:layout_gravity="center_horizontal"
+                android:text="INCLINAR -> VOLUME"
+                android:textStyle="bold"
+                android:textColor="#595959"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:text="ABANAR -> MUDAR MUSICA"
+                android:textStyle="bold"
+                android:textColor="#595959"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:text="SENSOR TAPAR -> PAUSA"
+                android:textStyle="bold"
+                android:textColor="#595959"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:background="#000000">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="#000000">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                app:tint="#FFFFFF"
+                android:src="@android:drawable/ic_media_play"
+                android:contentDescription="Player" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PLAYER"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnGoLibrary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="#ECECEC">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@android:drawable/ic_menu_agenda"
+                android:contentDescription="Biblioteca" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BIBLIOTECA"
+                android:textStyle="bold"
+                android:textColor="#111111"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

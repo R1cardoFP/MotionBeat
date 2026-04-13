@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/song_item_bg">
+
+    <ImageView
+        android:id="@+id/imgSong"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:src="@android:drawable/ic_media_play"
+        android:background="#DCDCDC"
+        android:scaleType="centerCrop"
+        android:contentDescription="Song" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="14dp">
+
+        <TextView
+            android:id="@+id/txtSongSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="01 / ATUAL"
+            android:textColor="#1F5E8A"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txtSongTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MUSIC 1"
+            android:textColor="#111111"
+            android:textStyle="bold"
+            android:textSize="17sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iconEnd"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/ic_media_next"
+        android:contentDescription="Estado" />
+
+</LinearLayout>

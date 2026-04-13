@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootList"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ECECEC">
+
+    <LinearLayout
+        android:id="@+id/topBarList"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:background="#ECECEC">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MOTIONBEAT"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:textColor="#111111" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#222222" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingTop="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lista de"
+            android:textStyle="bold"
+            android:textSize="74sp"
+            android:lineSpacingExtra="-8dp"
+            android:textColor="#1A1A1A" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="musicas"
+            android:textStyle="bold"
+            android:textSize="74sp"
+            android:lineSpacingExtra="-8dp"
+            android:textColor="#1A1A1A" />
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="5dp"
+            android:layout_marginTop="4dp"
+            android:background="#111111" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BIBLIOTECA TECNICA DE AUDIO / PROJETO"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#6A6A6A"
+            android:layout_marginTop="10dp" />
+
+        <Button
+            android:id="@+id/btnAddSongs"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:text="Adicionar musicas"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:backgroundTint="#111111"
+            android:textColor="#FFFFFF" />
+
+        <ListView
+            android:id="@+id/listSongs"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="12dp"
+            android:divider="#00000000"
+            android:dividerHeight="1dp"
+            android:background="@drawable/list_container_bg" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:background="#000000">
+
+        <LinearLayout
+            android:id="@+id/btnGoPlayer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="#ECECEC"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@android:drawable/ic_media_play"
+                android:contentDescription="Player" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PLAYER"
+                android:textStyle="bold"
+                android:textColor="#111111"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="#000000">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                app:tint="#FFFFFF"
+                android:src="@android:drawable/ic_menu_agenda"
+                android:contentDescription="Biblioteca" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BIBLIOTECA"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
