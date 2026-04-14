@@ -15,8 +15,8 @@ object PlayerManager {
     }
 
     fun getCurrentSong(): Song? {
-        val index = getCurrentSongIndex()
-        return if (index >= 0) MusicRepository.songs[index] else null
+        val i = getCurrentSongIndex()
+        return if (i >= 0) MusicRepository.songs[i] else null
     }
 
     fun isPlaying(): Boolean = mediaPlayer?.isPlaying == true
@@ -34,15 +34,13 @@ object PlayerManager {
         mediaPlayer = try {
             if (song.uriString != null) {
                 MediaPlayer().apply {
-                    setDataSource(context, Uri.parse(song.uriString))
+                    setDataSource(context.applicationContext, Uri.parse(song.uriString))
                     prepare()
                 }
             } else if (song.rawName != null) {
                 val resId = context.resources.getIdentifier(song.rawName, "raw", context.packageName)
-                if (resId != 0) MediaPlayer.create(context, resId) else null
-            } else {
-                null
-            }
+                if (resId != 0) MediaPlayer.create(context.applicationContext, resId) else null
+            } else null
         } catch (_: Exception) {
             null
         }
@@ -54,7 +52,14 @@ object PlayerManager {
         if (autoPlay) mediaPlayer?.start()
     }
 
-    fun playPause() {
+    fun playPause(context: Context) {
+        if (mediaPlayer == null) {
+            if (MusicRepository.songs.isNotEmpty()) {
+                playSong(context, getCurrentSongIndex().coerceAtLeast(0), true)
+            }
+            return
+        }
+
         mediaPlayer?.let {
             if (it.isPlaying) it.pause() else it.start()
         }

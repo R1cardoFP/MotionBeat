@@ -27,10 +27,9 @@ class MusicListActivity : AppCompatActivity() {
                 )
             } catch (_: Exception) {}
 
-            val fallbackName = extractDisplayName(uri) ?: "Sem nome"
-
+            val name = extractDisplayName(uri) ?: "Sem nome"
             MusicRepository.addDeviceSong(
-                displayName = fallbackName,
+                displayName = name,
                 uriString = uri.toString(),
                 artist = "Sem artista"
             )
@@ -58,7 +57,8 @@ class MusicListActivity : AppCompatActivity() {
 
         listView = findViewById(R.id.listSongs)
 
-        listView.setOnItemClickListener { _, _, _, _ ->
+        listView.setOnItemClickListener { _, _, position, _ ->
+            PlayerManager.playSong(this, position, true)
             startActivity(Intent(this, PlayerActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
@@ -93,7 +93,7 @@ class MusicListActivity : AppCompatActivity() {
         listView.adapter = SongListAdapter(
             this,
             MusicRepository.songs,
-            -1
+            PlayerManager.getCurrentSongIndex()
         )
     }
 

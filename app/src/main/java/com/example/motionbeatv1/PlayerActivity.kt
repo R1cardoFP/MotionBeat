@@ -2,6 +2,7 @@ package com.example.motionbeatv1
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,13 +25,13 @@ class PlayerActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btnNext)
         btnPrevious = findViewById(R.id.btnPrevious)
 
-        // Se ainda não houver player ativo, prepara a primeira música (sem autoplay)
         if (PlayerManager.getCurrentSong() == null && MusicRepository.songs.isNotEmpty()) {
             PlayerManager.playSong(this, 0, false)
         }
 
         btnPlayPause.setOnClickListener {
-            PlayerManager.playPause()
+            PlayerManager.playPause(this)
+
             updatePlayButton()
         }
 
@@ -46,7 +47,7 @@ class PlayerActivity : AppCompatActivity() {
             updatePlayButton()
         }
 
-        findViewById<android.view.View>(R.id.btnGoLibrary).setOnClickListener {
+        findViewById<View>(R.id.btnGoLibrary).setOnClickListener {
             startActivity(Intent(this, MusicListActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
@@ -68,12 +69,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun updatePlayButton() {
-        val icon = if (PlayerManager.isPlaying()) {
-            android.R.drawable.ic_media_pause
+        if (PlayerManager.isPlaying()) {
+            btnPlayPause.setImageResource(android.R.drawable.ic_media_pause)
         } else {
-            android.R.drawable.ic_media_play
+            btnPlayPause.setImageResource(android.R.drawable.ic_media_play)
         }
-        btnPlayPause.setImageResource(icon)
     }
 
     override fun finish() {
