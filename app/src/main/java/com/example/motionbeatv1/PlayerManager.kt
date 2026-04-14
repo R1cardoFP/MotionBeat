@@ -3,11 +3,14 @@
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
+
 
 object PlayerManager {
 
     private var mediaPlayer: MediaPlayer? = null
     private var currentSongIndex: Int = 0
+    private var volume: Float = 0.5f
 
     fun getCurrentSongIndex(): Int {
         if (MusicRepository.songs.isEmpty()) return -1
@@ -20,6 +23,20 @@ object PlayerManager {
     }
 
     fun isPlaying(): Boolean = mediaPlayer?.isPlaying == true
+
+    fun getDuration(): Int = mediaPlayer?.duration ?: 0
+    fun getCurrentPosition(): Int = mediaPlayer?.currentPosition ?: 0
+
+    fun seekTo(position: Int) {
+        mediaPlayer?.seekTo(position.coerceAtLeast(0))
+    }
+
+    fun getVolumePercent(): Int = (volume * 100f).toInt()
+
+    fun setVolumePercent(percent: Int) {
+        volume = (percent.coerceIn(0, 100) / 100f)
+        mediaPlayer?.setVolume(volume, volume)
+    }
 
     fun playSong(context: Context, index: Int, autoPlay: Boolean) {
         if (MusicRepository.songs.isEmpty()) return
@@ -45,6 +62,7 @@ object PlayerManager {
             null
         }
 
+        mediaPlayer?.setVolume(volume, volume)
         mediaPlayer?.setOnCompletionListener {
             nextSong(context, true)
         }
