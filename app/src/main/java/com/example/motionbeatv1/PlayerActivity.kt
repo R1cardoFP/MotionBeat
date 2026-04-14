@@ -1,18 +1,19 @@
 package com.example.motionbeatv1
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class PlayerActivity : AppCompatActivity() {
 
+    private lateinit var imgCover: ImageView
     private lateinit var txtSongTitle: TextView
     private lateinit var txtSongSubtitle: TextView
     private lateinit var txtCurrentTime: TextView
@@ -52,6 +53,7 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
+        imgCover = findViewById(R.id.imgCover)
         txtSongTitle = findViewById(R.id.txtSongTitle)
         txtSongSubtitle = findViewById(R.id.txtSongSubtitle)
         txtCurrentTime = findViewById(R.id.txtCurrentTime)
@@ -89,12 +91,11 @@ class PlayerActivity : AppCompatActivity() {
 
         progressSong.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    txtCurrentTime.text = formatTime(progress)
-                }
+                if (fromUser) txtCurrentTime.text = formatTime(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 PlayerManager.seekTo(seekBar?.progress ?: 0)
             }
@@ -137,8 +138,17 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun updateSongInfo() {
         val song = PlayerManager.getCurrentSong()
-        txtSongTitle.text = song?.title ?: "Sem música"
-        txtSongSubtitle.text = song?.artist ?: "Sem artista"
+        val metadata = PlayerManager.readMetadata(this, song)
+
+        txtSongTitle.text = metadata.title
+        txtSongSubtitle.text = metadata.artist
+
+        val artwork = PlayerManager.getArtwork(this, song)
+        if (artwork != null) {
+            imgCover.setImageBitmap(artwork)
+        } else {
+            imgCover.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
     }
 
     private fun updateProgressMax() {

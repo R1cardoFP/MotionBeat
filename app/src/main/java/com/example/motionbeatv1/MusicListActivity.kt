@@ -27,11 +27,22 @@ class MusicListActivity : AppCompatActivity() {
                 )
             } catch (_: Exception) {}
 
-            val name = extractDisplayName(uri) ?: "Sem nome"
+            val fallbackName = extractDisplayName(uri) ?: "Sem nome"
+            val metadata = PlayerManager.readMetadata(
+                this,
+                Song(
+                    id = -1,
+                    title = fallbackName,
+                    subtitle = "",
+                    artist = "Sem artista",
+                    uriString = uri.toString()
+                )
+            )
+
             MusicRepository.addDeviceSong(
-                displayName = name,
+                displayName = metadata.title,
                 uriString = uri.toString(),
-                artist = "Sem artista"
+                artist = metadata.artist
             )
         }
 
@@ -54,6 +65,9 @@ class MusicListActivity : AppCompatActivity() {
         if (MusicRepository.songs.isEmpty()) {
             MusicRepository.replaceWith(SongStorage.loadSongs(this))
         }
+
+        // Atualiza títulos/artistas com metadata real (para músicas já guardadas)
+        enrichRepositoryMetadata()
 
         listView = findViewById(R.id.listSongs)
 
@@ -87,6 +101,18 @@ class MusicListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshList()
+    }
+
+    private fun enrichRepositoryMetadata() {
+        val updated = MusicRepository.songs.map { song ->
+            val meta = PlayerManager.readMetadata(this, song)
+            song.copy(
+                title = meta.title,
+                artist = meta.artist
+            )
+        }
+        MusicRepository.replaceWith(updated)
+        SongStorage.saveSongs(this, MusicRepository.songs)
     }
 
     private fun refreshList() {

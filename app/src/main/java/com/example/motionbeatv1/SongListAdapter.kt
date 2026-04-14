@@ -11,7 +11,7 @@ import android.widget.TextView
 class SongListAdapter(
     private val context: Context,
     private val songs: List<Song>,
-    private val selectedIndex: Int = -1
+    private val selectedIndex: Int
 ) : BaseAdapter() {
 
     override fun getCount(): Int = songs.size
@@ -29,14 +29,26 @@ class SongListAdapter(
         val txtTitle = view.findViewById<TextView>(R.id.txtSongTitle)
         val iconEnd = view.findViewById<ImageView>(R.id.iconEnd)
 
-        txtSubtitle.text = song.subtitle
+        val isCurrent = position == selectedIndex
+
+        txtSubtitle.text = if (isCurrent) {
+            String.format("%02d / ATUAL", position + 1)
+        } else {
+            String.format("%02d / ARQUIVO", position + 1)
+        }
+
         txtTitle.text = song.title
 
-        // Sem PlayerManager por agora
-        imgSong.setImageResource(android.R.drawable.ic_media_play)
+        // CAPA DA MÚSICA NA LISTA
+        val artwork = PlayerManager.getArtwork(context, song)
+        if (artwork != null) {
+            imgSong.setImageBitmap(artwork)
+        } else {
+            imgSong.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
 
-        if (position == selectedIndex) {
-            iconEnd.setImageResource(android.R.drawable.ic_media_play)
+        if (isCurrent && PlayerManager.isPlaying()) {
+            iconEnd.setImageResource(android.R.drawable.ic_lock_silent_mode_off)
         } else {
             iconEnd.setImageResource(android.R.drawable.ic_media_next)
         }
