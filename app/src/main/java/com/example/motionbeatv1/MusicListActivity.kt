@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat
 class MusicListActivity : AppCompatActivity() {
 
     private lateinit var listView: ListView
-    private lateinit var adapter: ArrayAdapter<String>
 
     private val pickSongsLauncher = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -29,13 +27,16 @@ class MusicListActivity : AppCompatActivity() {
                 )
             } catch (_: Exception) {}
 
-            val name = extractDisplayName(uri) ?: "Sem nome"
+            val fallbackName = extractDisplayName(uri) ?: "Sem nome"
+
             MusicRepository.addDeviceSong(
-                displayName = name,
+                displayName = fallbackName,
                 uriString = uri.toString(),
                 artist = "Sem artista"
             )
         }
+
+        SongStorage.saveSongs(this, MusicRepository.songs)
         refreshList()
         Toast.makeText(this, "Músicas adicionadas", Toast.LENGTH_SHORT).show()
     }
@@ -51,36 +52,49 @@ class MusicListActivity : AppCompatActivity() {
             insets
         }
 
-        listView = findViewById(R.id.listSongs)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
-        listView.adapter = adapter
-
-        findViewById<View>(R.id.btnAddSongs).setOnClickListener {
-            pickSongsLauncher.launch(arrayOf("audio/*"))
+        if (MusicRepository.songs.isEmpty()) {
+            MusicRepository.replaceWith(SongStorage.loadSongs(this))
         }
 
-        // BOTÃO DE NAVEGAÇÃO PARA O PLAYER
-        findViewById<View>(R.id.btnGoPlayer).setOnClickListener {
+        listView = findViewById(R.id.listSongs)
+
+        listView.setOnItemClickListener { _, _, _, _ ->
             startActivity(Intent(this, PlayerActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         listView.setOnItemLongClickListener { _, _, position, _ ->
             if (MusicRepository.removeSongAt(position)) {
+                SongStorage.saveSongs(this, MusicRepository.songs)
                 refreshList()
                 Toast.makeText(this, "Música removida", Toast.LENGTH_SHORT).show()
             }
             true
         }
 
+        findViewById<View>(R.id.btnAddSongs).setOnClickListener {
+            pickSongsLauncher.launch(arrayOf("audio/*"))
+        }
+
+        findViewById<View>(R.id.btnGoPlayer).setOnClickListener {
+            startActivity(Intent(this, PlayerActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
+
+        refreshList()
+    }
+
+    override fun onResume() {
+        super.onResume()
         refreshList()
     }
 
     private fun refreshList() {
-        val names = MusicRepository.songs.map { it.title }
-        adapter.clear()
-        adapter.addAll(names)
-        adapter.notifyDataSetChanged()
+        listView.adapter = SongListAdapter(
+            this,
+            MusicRepository.songs,
+            -1
+        )
     }
 
     private fun extractDisplayName(uri: Uri): String? {
@@ -91,5 +105,10 @@ class MusicListActivity : AppCompatActivity() {
             }
         }
         return null
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
