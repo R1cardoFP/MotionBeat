@@ -1,6 +1,10 @@
 package com.example.motionbeatv1
 
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,7 +15,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var imgCover: ImageView
     private lateinit var txtSongTitle: TextView
@@ -28,6 +32,10 @@ class PlayerActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var lastSongIndex = -1
+
+    private lateinit var sensorManager: SensorManager
+    private var orientationSensor: Sensor? = null
+    private var lastTiltTime = 0L
 
     private val progressRunnable = object : Runnable {
         override fun run() {
@@ -116,6 +124,9 @@ class PlayerActivity : AppCompatActivity() {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
+
         updateSongInfo()
         updateProgressMax()
         updatePlayButton()
@@ -124,16 +135,57 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         handler.post(progressRunnable)
+        orientationSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
     }
 
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(progressRunnable)
+        sensorManager.unregisterListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(progressRunnable)
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        when (event.sensor.type) {
+            Sensor.TYPE_ORIENTATION -> {
+                // values[2] = roll
+                handleTiltFromOrientation(event.values[2])
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    private fun handleTiltFromOrientation(roll: Float) {
+        val now = System.currentTimeMillis()
+        if (now - lastTiltTime < 700) return
+
+        // Direita ~45° -> aumenta
+        if (roll < -35f) {
+            increaseVolumeStep()
+            lastTiltTime = now
+        }
+        // Esquerda ~45° -> diminui
+        else if (roll > 35f) {
+            decreaseVolumeStep()
+            lastTiltTime = now
+        }
+    }
+
+    private fun increaseVolumeStep() {
+        val newVolume = (PlayerManager.getVolumePercent() + 2).coerceAtMost(100)
+        PlayerManager.setVolumePercent(newVolume)
+        seekVolume.progress = newVolume
+    }
+
+    private fun decreaseVolumeStep() {
+        val newVolume = (PlayerManager.getVolumePercent() - 2).coerceAtLeast(0)
+        PlayerManager.setVolumePercent(newVolume)
+        seekVolume.progress = newVolume
     }
 
     private fun updateSongInfo() {
