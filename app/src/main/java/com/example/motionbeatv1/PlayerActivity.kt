@@ -162,7 +162,7 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
 
     private fun handleTiltFromOrientation(roll: Float) {
         val now = System.currentTimeMillis()
-        if (now - lastTiltTime < 700) return
+        if (now - lastTiltTime < 300) return
 
         // Direita ~45° -> aumenta
         if (roll < -35f) {
@@ -177,13 +177,13 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun increaseVolumeStep() {
-        val newVolume = (PlayerManager.getVolumePercent() + 2).coerceAtMost(100)
+        val newVolume = (PlayerManager.getVolumePercent() + 4).coerceAtMost(100)
         PlayerManager.setVolumePercent(newVolume)
         seekVolume.progress = newVolume
     }
 
     private fun decreaseVolumeStep() {
-        val newVolume = (PlayerManager.getVolumePercent() - 2).coerceAtLeast(0)
+        val newVolume = (PlayerManager.getVolumePercent() - 4).coerceAtLeast(0)
         PlayerManager.setVolumePercent(newVolume)
         seekVolume.progress = newVolume
     }
