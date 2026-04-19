@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.math.sqrt
 
 class PlayerActivity : AppCompatActivity(), SensorEventListener {
 
@@ -34,8 +35,12 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     private var lastSongIndex = -1
 
     private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
     private var orientationSensor: Sensor? = null
     private var lastTiltTime = 0L
+    private var lastAcceleration = SensorManager.GRAVITY_EARTH
+    private var filteredAcceleration = SensorManager.GRAVITY_EARTH
+    private var lastShakeTime = 0L
 
     private val progressRunnable = object : Runnable {
         override fun run() {
@@ -125,6 +130,7 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
         }
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
 
         updateSongInfo()
@@ -135,6 +141,7 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         handler.post(progressRunnable)
+        accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
         orientationSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
     }
 
@@ -151,6 +158,9 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent) {
         when (event.sensor.type) {
+            Sensor.TYPE_ACCELEROMETER -> {
+                handleShake(event.values[0], event.values[1], event.values[2])
+            }
             Sensor.TYPE_ORIENTATION -> {
                 // values[2] = roll
                 handleTiltFromOrientation(event.values[2])
@@ -159,6 +169,22 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    private fun handleShake(x: Float, y: Float, z: Float) {
+        val currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+        val delta = currentAcceleration - lastAcceleration
+        lastAcceleration = currentAcceleration
+        filteredAcceleration = filteredAcceleration * 0.9f + delta
+
+        val now = System.currentTimeMillis()
+        if (filteredAcceleration > 12f && now - lastShakeTime > 1000) {
+            lastShakeTime = now
+            PlayerManager.nextSong(this, true)
+            updateSongInfo()
+            updateProgressMax()
+            updatePlayButton()
+        }
+    }
 
     private fun handleTiltFromOrientation(roll: Float) {
         val now = System.currentTimeMillis()
