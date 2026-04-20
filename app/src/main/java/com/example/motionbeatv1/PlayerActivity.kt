@@ -37,10 +37,18 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var orientationSensor: Sensor? = null
+    private var lightSensor: Sensor? = null
     private var lastTiltTime = 0L
     private var lastAcceleration = SensorManager.GRAVITY_EARTH
     private var filteredAcceleration = SensorManager.GRAVITY_EARTH
     private var lastShakeTime = 0L
+    private var isDark = false
+    private var resumeAfterUncover = false
+    private var darkSinceMs = 0L
+    private var ignoreLightUntil = 0L
+    private var firstLightSample = true
+    private val lightIgnoreMs = 1500L
+    private val lightCoverMs = 3000L
 
     private val progressRunnable = object : Runnable {
         override fun run() {
@@ -132,6 +140,7 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
         updateSongInfo()
         updateProgressMax()
@@ -141,8 +150,12 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         handler.post(progressRunnable)
+        ignoreLightUntil = System.currentTimeMillis() + lightIgnoreMs
+        firstLightSample = true
+        darkSinceMs = 0L
         accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
         orientationSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
+        lightSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
     }
 
     override fun onPause() {
@@ -164,6 +177,9 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
             Sensor.TYPE_ORIENTATION -> {
                 // values[2] = roll
                 handleTiltFromOrientation(event.values[2])
+            }
+            Sensor.TYPE_LIGHT -> {
+                handleLight(event.values[0])
             }
         }
     }
@@ -199,6 +215,43 @@ class PlayerActivity : AppCompatActivity(), SensorEventListener {
         else if (roll > 35f) {
             decreaseVolumeStep()
             lastTiltTime = now
+        }
+    }
+
+    private fun handleLight(lux: Float) {
+        val now = System.currentTimeMillis()
+        if (now < ignoreLightUntil) return
+
+        val nowDark = lux <= 0.0f
+
+        if (firstLightSample) {
+            isDark = nowDark
+            darkSinceMs = if (nowDark) now else 0L
+            firstLightSample = false
+            return
+        }
+
+        if (nowDark) {
+            if (darkSinceMs == 0L) darkSinceMs = now
+            val coveredConfirmed = now - darkSinceMs >= lightCoverMs
+            if (coveredConfirmed && !isDark) {
+                isDark = true
+                resumeAfterUncover = PlayerManager.isPlaying()
+                if (resumeAfterUncover) {
+                    PlayerManager.playPause(this)
+                    updatePlayButton()
+                }
+            }
+        } else {
+            darkSinceMs = 0L
+            if (isDark) {
+                isDark = false
+                if (resumeAfterUncover && !PlayerManager.isPlaying()) {
+                    PlayerManager.playPause(this)
+                }
+                resumeAfterUncover = false
+                updatePlayButton()
+            }
         }
     }
 
