@@ -1,4 +1,4 @@
-package com.example.motionbeatv1
+﻿package com.example.motionbeatv1
 
 import android.content.Context
 import org.json.JSONArray
@@ -9,9 +9,11 @@ import kotlin.text.format
 import kotlin.text.isNotBlank
 
 object SongStorage {
+    // --- Chaves de persistencia em SharedPreferences
     private const val PREF_NAME = "motionbeat_prefs"
     private const val KEY_SONGS = "saved_songs"
 
+    // --- Guarda apenas musicas do dispositivo em formato JSON
     fun saveSongs(context: Context, songs: List<Song>) {
         val arr = JSONArray()
         songs.forEach { song ->
@@ -30,6 +32,7 @@ object SongStorage {
             .apply()
     }
 
+    // --- Carrega musicas guardadas e reconstrÃ³i a lista de Song
     fun loadSongs(context: Context): List<Song> {
         val json = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_SONGS, "[]")
@@ -57,3 +60,5 @@ object SongStorage {
         return result
     }
 }
+
+

@@ -14,12 +14,16 @@ class SongListAdapter(
     private val selectedIndex: Int
 ) : BaseAdapter() {
 
+    // --- Numero total de elementos na lista
     override fun getCount(): Int = songs.size
 
+    // --- Devolve item por posicao
     override fun getItem(position: Int): Any = songs[position]
 
+    // --- ID estavel para o item da lista
     override fun getItemId(position: Int): Long = songs[position].id.toLong()
 
+    // --- Cria/recicla cada linha e aplica estado visual
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_song, parent, false)
         val song = songs[position]
@@ -39,7 +43,7 @@ class SongListAdapter(
 
         txtTitle.text = song.title
 
-        // CAPA DA MÚSICA NA LISTA
+        // --- Carrega capa da musica para a lista
         val artwork = PlayerManager.getArtwork(context, song)
         if (artwork != null) {
             imgSong.setImageBitmap(artwork)
@@ -56,3 +60,5 @@ class SongListAdapter(
         return view
     }
 }
+
+

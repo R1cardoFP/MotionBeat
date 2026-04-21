@@ -1,4 +1,4 @@
-package com.example.motionbeatv1
+﻿package com.example.motionbeatv1
 
 import android.content.Intent
 import android.net.Uri
@@ -14,11 +14,14 @@ import androidx.core.view.WindowInsetsCompat
 
 class MusicListActivity : AppCompatActivity() {
 
+    // --- Lista visual de musicas no ecra de biblioteca
     private lateinit var listView: ListView
 
+    // --- Lancador do seletor de documentos para importar multiplos audios
     private val pickSongsLauncher = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris: List<Uri> ->
+        // --- Percorre cada URI selecionado e tenta manter permissao de leitura apos reiniciar app
         uris.forEach { uri ->
             try {
                 contentResolver.takePersistableUriPermission(
@@ -27,6 +30,7 @@ class MusicListActivity : AppCompatActivity() {
                 )
             } catch (_: Exception) {}
 
+            // --- Se nao houver metadados no ficheiro, usa o nome apresentado pelo sistema
             val fallbackName = extractDisplayName(uri) ?: "Sem nome"
             val metadata = PlayerManager.readMetadata(
                 this,
@@ -55,6 +59,7 @@ class MusicListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music_list)
 
+        // --- Aplica insets para evitar sobreposicao com barras do sistema
         val root = findViewById<View>(R.id.rootList)
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -66,18 +71,20 @@ class MusicListActivity : AppCompatActivity() {
             MusicRepository.replaceWith(SongStorage.loadSongs(this))
         }
 
-        // Atualiza títulos/artistas com metadata real (para músicas já guardadas)
+        // --- Reescreve os dados visiveis com metadados reais lidos dos ficheiros
         enrichRepositoryMetadata()
 
         listView = findViewById(R.id.listSongs)
 
         listView.setOnItemClickListener { _, _, position, _ ->
+            // --- Ao tocar num item, inicia essa faixa e abre o ecra do leitor
             PlayerManager.playSong(this, position, true)
             startActivity(Intent(this, PlayerActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         listView.setOnItemLongClickListener { _, _, position, _ ->
+            // --- Pressao longa remove musica da lista e persiste a alteracao
             if (MusicRepository.removeSongAt(position)) {
                 SongStorage.saveSongs(this, MusicRepository.songs)
                 refreshList()
@@ -103,6 +110,7 @@ class MusicListActivity : AppCompatActivity() {
         refreshList()
     }
 
+    // --- Rele metadados de cada musica e atualiza o repositorio
     private fun enrichRepositoryMetadata() {
         val updated = MusicRepository.songs.map { song ->
             val meta = PlayerManager.readMetadata(this, song)
@@ -115,6 +123,7 @@ class MusicListActivity : AppCompatActivity() {
         SongStorage.saveSongs(this, MusicRepository.songs)
     }
 
+    // --- Reconstroi a lista visual com a musica atualmente selecionada
     private fun refreshList() {
         listView.adapter = SongListAdapter(
             this,
@@ -123,6 +132,7 @@ class MusicListActivity : AppCompatActivity() {
         )
     }
 
+    // --- Extrai o nome apresentado pelo fornecedor de ficheiros
     private fun extractDisplayName(uri: Uri): String? {
         contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
             if (c.moveToFirst()) {
@@ -138,3 +148,5 @@ class MusicListActivity : AppCompatActivity() {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
+
+

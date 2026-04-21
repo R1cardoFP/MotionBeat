@@ -1,5 +1,6 @@
 ﻿package com.example.motionbeatv1
 
+// --- Modelo base de dados de uma musica na aplicacao
 data class Song(
     val id: Int,
     val title: String,
@@ -8,4 +9,5 @@ data class Song(
     val rawName: String? = null,
     val uriString: String? = null
 )
+
 

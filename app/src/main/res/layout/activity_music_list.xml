@@ -48,7 +48,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="musicas"
+            android:text="músicas"
             android:textStyle="bold"
             android:textSize="74sp"
             android:lineSpacingExtra="-8dp"
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
-            android:text="Adicionar musicas"
+            android:text="Adicionar músicas"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:backgroundTint="#111111"

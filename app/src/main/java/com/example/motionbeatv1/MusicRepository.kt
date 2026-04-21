@@ -6,16 +6,20 @@ import kotlin.collections.maxOfOrNull
 import kotlin.text.format
 
 object MusicRepository {
+    // --- Lista mutavel interna com as musicas disponiveis
     private val _songs = mutableListOf<Song>()
 
+    // --- Exposicao publica da lista em modo de leitura
     val songs: List<Song>
         get() = _songs
 
+    // --- Substitui o conteudo atual do repositorio
     fun replaceWith(songs: List<Song>) {
         _songs.clear()
         _songs.addAll(songs)
     }
 
+    // --- Adiciona musica do dispositivo evitando duplicados por URI
     fun addDeviceSong(displayName: String, uriString: String, artist: String) {
         if (_songs.any { it.uriString == uriString }) return
 
@@ -32,6 +36,7 @@ object MusicRepository {
         )
     }
 
+    // --- Remove musica por indice e atualiza subtitulos
     fun removeSongAt(index: Int): Boolean {
         if (index !in _songs.indices) return false
         _songs.removeAt(index)
@@ -39,6 +44,7 @@ object MusicRepository {
         return true
     }
 
+    // --- Recalcula numeracao dos subtitulos apos alteracoes
     private fun renumberSubtitles() {
         for (i in _songs.indices) {
             val current = _songs[i]
@@ -46,4 +52,5 @@ object MusicRepository {
         }
     }
 }
+
 
